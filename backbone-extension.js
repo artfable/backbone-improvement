@@ -81,14 +81,15 @@ $(function() {
 				mainView.resolve();
 			}
             logger.debug('[Backbone.View] Start resolve view "' + this.templateUrl + '".');
-            this.resolve();
+            this.resolve.apply(this, arguments);
         } else {
+            var thatArguments = arguments;
             this.load(function() {
 				logger.debug('[Backbone.View] "' + that.templateUrl + '" loaded.');
 				if (mainView) {
 					mainView.resolve();
 				}
-				that.render.apply(that, arguments);
+				that.render.apply(that, thatArguments);
 			});
         }
     };
