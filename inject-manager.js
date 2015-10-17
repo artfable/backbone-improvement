@@ -6,10 +6,20 @@
 (function() {
 	'use strict';
 
+    /*
+     * If no specify logger is register, use usual console.
+     * Attention! In IE console may be undefined, so it can be an exception!
+     */
     if (window.logger === undefined) {
         window.logger = console;
     }
 
+    /**
+     * InjectManager - allow to write Backbone components ("beans") in independent file or code block, and initialize it only when it's needed.
+     * It's good idea to delete manager after application is started (by <pre>delete window.application.injectionManager;</pre>).
+     *
+     * @type {{injectionManager: {push, applyFunction}}}
+     */
 	window.application = {
 		injectionManager: (function() {
 			var actions = {};
@@ -29,6 +39,17 @@
 			};
 
 			return {
+                /**
+                 * Register beans in injectManager.
+                 * Example of use: <br/>
+                 * window.application.injectionManager.push('someView', ['appState', 'someEvent'], function(appState, someEvent) {
+                 *  return new (Backbone.View.extend({...}))();
+                 * })
+                 *
+                 * @param {string} name - name of bean
+                 * @param {=} beansNames - names of beans that must be inject in current bean (can be skipped if no beans must be injected)
+                 * @param {function|Object} actionOrBean - function that create and return bean or bean; enter params is beans that were declared in <b>beansNames</b>
+                 */
 				push: function(name, beansNames, actionOrBean) {
 					if (beans[name]) {
 						logger.warn('[application.injectionManager] Rewrite component "' + name + '".');
@@ -57,6 +78,15 @@
 					}
 				},
 
+                /**
+                 * Allowed to make some activities that must use beans. Can be used for start application.
+                 * Example of use: <br/>
+                 * window.application.injectionManager.applyFunction(['router'], function(router) {...})
+                 *
+                 * @param {Array} beansNames
+                 * @param {function} action
+                 * @returns {*}
+                 */
 				applyFunction: function(beansNames, action) {
 					var beansToInject = [];
 					_.each(beansNames, function(injectName) {

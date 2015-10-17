@@ -61,7 +61,7 @@ $(function() {
     };
 
     /**
-     * Отрисовка страницы, обеспецивает загрузку шаблона, после чего вызывает {@link View#resolve}
+     * Отрисовка страницы, обеспецивает загрузку шаблона, после чего вызывает {@link Backbone.View#resolve}
      */
     Backbone.View.prototype.render = function() {
 		var mainView = this.mainView;
@@ -95,11 +95,13 @@ $(function() {
     };
 
     /**
-     * Инициализация {@link View}
+     * Инициализация {@link Backbone.View}
      * @returns {Backbone.View}
      */
     Backbone.View.prototype.initialize = function() {
-        this.resolve = _.bind(this.resolve, this);
+        if (this.resolve) {
+            this.resolve = _.bind(this.resolve, this);
+        }
         if (this.afterInitialize) {
             this.afterInitialize = _.bind(this.afterInitialize, this);
             this.afterInitialize();
