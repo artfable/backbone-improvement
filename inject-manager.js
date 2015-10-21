@@ -16,7 +16,7 @@
 
     /**
      * InjectManager - allow to write Backbone components ("beans") in independent file or code block, and initialize it only when it's needed.
-     * It's good idea to delete manager after application is started (by <pre>delete window.application.injectionManager;</pre>).
+     * It's a good idea to delete manager after application was started (by <pre>delete window.application.injectionManager;</pre>).
      *
      * @type {{injectionManager: {push, applyFunction}}}
      */
@@ -24,9 +24,10 @@
 		injectionManager: (function() {
 			var actions = {};
 			var beans = {};
+            var standaloneBeansNames = [];
 
-			var getBean = function(name) {
-				logger.debug('[application.modulesInitFunctions] Ask for "' + name + '"');
+			var initBean = function(name) {
+				logger.debug('[application.injectionManager] Ask for "' + name + '"');
 				if (beans[name]) {
 					return beans[name];
 				}
@@ -35,7 +36,7 @@
 					return beans[name] = actions[name]();
 				}
 
-				logger.error('[application.injectionManager] There\'s no component for name "' + name + '".');
+				logger.error('[application.injectionManager] There\'s no bean with name "' + name + '".');
 			};
 
 			return {
@@ -62,8 +63,12 @@
 						actions[name] = function() {
 							logger.log('[application.modulesInitFunctions] Register component "' + name + '".');
 							var beansToInject = [];
+                            var standalone = _.intersection(standaloneBeansNames, beansNames);
+                            if (standalone.length > 0) {
+                                logger.warn('[application.injectionManager] Inject beans [' + standalone + '], although they marked as "standalone"!');
+                            }
 							_.each(beansNames, function(injectName) {
-								var bean = getBean(injectName);
+								var bean = initBean(injectName);
 								if (bean) {
 									beansToInject.push(bean);
 								} else {
@@ -78,6 +83,17 @@
 					}
 				},
 
+                pushStandalone: function(name, beansNames, actionOrBean) {
+                    standaloneBeansNames.push(name);
+                    this.push(name, beansNames, actionOrBean);
+                },
+
+                initStandalone: function() {
+                    _.each(standaloneBeansNames, function(standaloneBeanName) {
+                        initBean(standaloneBeanName);
+                    });
+                },
+
                 /**
                  * Allowed to make some activities that must use beans. Can be used for start application.
                  * Example of use: <br/>
@@ -90,7 +106,7 @@
 				applyFunction: function(beansNames, action) {
 					var beansToInject = [];
 					_.each(beansNames, function(injectName) {
-						var bean = getBean(injectName);
+						var bean = initBean(injectName);
 						if (bean) {
 							beansToInject.push(bean);
 						} else {
@@ -98,7 +114,18 @@
 						}
 					});
 					return action.apply(null, beansToInject);
-				}
+				},
+
+                /**
+                 * For check your application.
+                 */
+                auditNotInitializedBeans: function() {
+                    var notInitBeans = _.difference(_.keys(actions), _.keys(beans));
+                    if (notInitBeans.length > 0) {
+                        logger.warn('[application.injectionManager] Beans [' + notInitBeans + '] weren\'t initialized');
+                        return notInitBeans;
+                    }
+                }
 			}
 		})()
 	};

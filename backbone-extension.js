@@ -231,7 +231,20 @@ $(function() {
         var state;
         var routes = {};
         var routeOptions = {
-            routes: routes
+            routes: routes,
+            execute: function(callback, args, name) {
+                state.set({page: name});
+                logger.debug('[Backbone.routerBuilder] Open page "' + name + '"');
+
+                if (callback) {
+                    callback.apply(this, args);
+                }
+            },
+            routeByView: function(route, name, view) {
+                this.route(route, name, function() {
+                    view.render.apply(view, arguments);
+                });
+            }
         };
 
         return {
@@ -247,8 +260,7 @@ $(function() {
             addBeginRoute: function(actionName, view) {
                 var startRoutes = ['', '!/', '/'];
                 var startAction = function() {
-                    state.set({page: actionName});
-                    logger.debug('[Backbone.routerBuilder] Open page "' + actionName + '"');
+                    // for save 'this'
                     view.render();
                 };
                 _.each(startRoutes, function(route) {
@@ -269,11 +281,7 @@ $(function() {
                 if (action.render) {
                     action = _.bind(action.render, action);
                 }
-                routeOptions[actionName] = function() {
-                    state.set({page: actionName});
-                    logger.debug('[Backbone.routerBuilder] Open page "' + actionName + '"');
-                    action.apply(this, arguments);
-                };
+                routeOptions[actionName] = action;
                 return this;
             },
 
