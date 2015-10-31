@@ -191,7 +191,7 @@ $(function() {
                 }, data);
                 return;
             }
-            var component = $('[component=' + that.name + ']');
+            var component = that.$component = $('[component=' + that.name + ']');
             if (component.length > 0) {
                 $.get(that.template, function(template) {
                     component.html(_.template(template)(_.extend(that.data, data)));
@@ -296,18 +296,15 @@ $(function() {
 
             /**
              * Заверщает сборку {@link Backbone.Router} и запускает его
-             * @param {=} startOptions - опции для {@link Backbone.history.start}
              * @returns {Function|void|*}
              */
-            build: function(startOptions) {
+            build: function() {
                 if (!state) {
                     logger.error('[Backbone.routerBuilder] Can\'t start router, because there is no stateHolder');
                     return undefined;
                 }
 
-                var router = new (Backbone.Router.extend(routeOptions))();
-                Backbone.history.start(startOptions);
-                return router;
+                return new (Backbone.Router.extend(routeOptions))();
             }
         }
     })();

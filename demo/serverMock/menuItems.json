@@ -1,0 +1,12 @@
+[
+  {
+    "id": "main",
+    "name": "Main",
+    "url": "!/main"
+  },
+  {
+    "id": "news",
+    "name": "News",
+    "url": "!/news"
+  }
+]

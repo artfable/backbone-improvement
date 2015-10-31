@@ -1,0 +1,10 @@
+[
+  {
+    "header": "First news",
+    "description": "Some long description. This some interesting, or maybe not.<br/>And there are some html tags for <i style=\"color: red\">format</i> text."
+  },
+  {
+    "header": "Second",
+    "description": "There are nothing to look for!!!"
+  }
+]

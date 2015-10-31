@@ -53,7 +53,7 @@
                  */
 				push: function(name, beansNames, actionOrBean) {
 					if (beans[name]) {
-						logger.warn('[application.injectionManager] Rewrite component "' + name + '".');
+						logger.warn('[application.injectionManager] Rewrite bean "' + name + '".');
 					}
 					if (arguments.length < 3) {
 						// I don't like this, for justification: jQuery do the same)
@@ -61,7 +61,7 @@
 					}
 					if (_.isFunction(actionOrBean)) {
 						actions[name] = function() {
-							logger.log('[application.modulesInitFunctions] Register component "' + name + '".');
+							logger.log('[application.injectionManager] Register bean "' + name + '".');
 							var beansToInject = [];
                             var standalone = _.intersection(standaloneBeansNames, beansNames);
                             if (standalone.length > 0) {
