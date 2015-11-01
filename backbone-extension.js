@@ -66,6 +66,22 @@ $(function() {
     Backbone.View.prototype.render = function() {
 		var mainView = this.mainView;
 		var that = this;
+        var resolveMainView = function() {
+            if (!mainView.$el) {
+                logger.warn('[Backbone.View] MainView for "' + mainView.templateUrl + '" hasn\'t got "$el"');
+                mainView.resolve();
+            } else if (mainView.$el.attr('view') != mainView.cid) {
+                mainView.$el.attr('view', mainView.cid);
+                mainView.resolve();
+            }
+        };
+        if (this.$el) {
+            this.$el.removeAttr('view');
+        } else if (this.container) {
+            $(this.container).removeAttr('view');
+        } else {
+            logger.warn('[Backbone.View] View "' + this.cid + '" isn\'t attached to anyone DOM element.');
+        }
 		if (mainView && !mainView.template) {
 			if (!mainView.template) {
 				logger.debug('[Backbone.View] View "' + this.templateUrl + '" on "' + mainView.templateUrl + '".');
@@ -77,9 +93,9 @@ $(function() {
 			}
         }
         if (this.template) {
-			if (mainView) {
-				mainView.resolve();
-			}
+            if (mainView) {
+                resolveMainView();
+            }
             logger.debug('[Backbone.View] Start resolve view "' + this.templateUrl + '".');
             this.resolve.apply(this, arguments);
         } else {
@@ -87,7 +103,7 @@ $(function() {
             this.load(function() {
 				logger.debug('[Backbone.View] "' + that.templateUrl + '" loaded.');
 				if (mainView) {
-					mainView.resolve();
+					resolveMainView();
 				}
 				that.render.apply(that, thatArguments);
 			});

@@ -8,6 +8,13 @@ window.application.injectionManager.push('menuComponent', ['appState', 'menuItem
         name: 'menu',
         template: 'views/components/menu.html',
 
+        afterInitialize: function() {
+            var that = this;
+            appState.on('change:page', function() {
+                that.render(appState.toJSON());
+            });
+        },
+
         getData: function(callback, params) {
             var that = this;
 
