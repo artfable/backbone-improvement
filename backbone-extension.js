@@ -67,15 +67,18 @@ $(function() {
 		var mainView = this.mainView;
 		var that = this;
         var resolveMainView = function() {
-            if (!mainView.$el) {
-                logger.warn('[Backbone.View] MainView for "' + mainView.templateUrl + '" hasn\'t got "$el"');
+            if (!mainView) {
+                return;
+            }
+            if (!document.contains(mainView.el)) {
+                logger.warn('[Backbone.View] "$el" for "' + mainView.templateUrl + '" isn\'t in DOM');
                 mainView.resolve();
             } else if (mainView.$el.attr('view') != mainView.cid) {
                 mainView.$el.attr('view', mainView.cid);
                 mainView.resolve();
             }
         };
-        if (this.$el) {
+        if (document.contains(this.el)) { // check that element in DOM
             this.$el.removeAttr('view');
         } else if (this.container) {
             $(this.container).removeAttr('view');
@@ -86,25 +89,19 @@ $(function() {
 			if (!mainView.template) {
 				logger.debug('[Backbone.View] View "' + this.templateUrl + '" on "' + mainView.templateUrl + '".');
 				mainView.load(function() {
-					mainView.resolve();
 					that.render.apply(that, arguments);
 				});
 				return;
 			}
         }
         if (this.template) {
-            if (mainView) {
-                resolveMainView();
-            }
+            resolveMainView();
             logger.debug('[Backbone.View] Start resolve view "' + this.templateUrl + '".');
             this.resolve.apply(this, arguments);
         } else {
             var thatArguments = arguments;
             this.load(function() {
-				logger.debug('[Backbone.View] "' + that.templateUrl + '" loaded.');
-				if (mainView) {
-					resolveMainView();
-				}
+                logger.debug('[Backbone.View] "' + that.templateUrl + '" loaded.');
 				that.render.apply(that, thatArguments);
 			});
         }
@@ -209,11 +206,23 @@ $(function() {
             }
             var component = that.$component = $('[component=' + that.name + ']');
             if (component.length > 0) {
-                $.get(that.template, function(template) {
-                    component.html(_.template(template)(_.extend(that.data, data)));
+                var render = function() {
+                    component.html(that.template(_.extend(that.data, data)));
                     that.eventsApply();
                     that.afterRender();
-                });
+                };
+                if (_.isFunction(that.template)) {
+                    render();
+                } else {
+                    if (!that.templateUrl) {
+                        logger.error('[Backbone.Component] No "templateUrl" property for component "' + that.name + '"');
+                        return;
+                    }
+                    $.get(that.templateUrl, function(template) {
+                        that.template = _.template(template);
+                        render();
+                    });
+                }
             }
         });
     };

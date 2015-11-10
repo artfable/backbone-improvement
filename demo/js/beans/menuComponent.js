@@ -6,7 +6,7 @@ window.application.injectionManager.push('menuComponent', ['appState', 'menuItem
     'use strict';
     return new (Backbone.Component.extend({
         name: 'menu',
-        template: 'views/components/menu.html',
+        templateUrl: 'views/components/menu.html',
 
         afterInitialize: function() {
             var that = this;
