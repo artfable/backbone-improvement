@@ -10,7 +10,8 @@ Backbone (http://backbonejs.org/)
 Simple wrapper for console, can be used without backbone, underscore or jQuery. Can be used safely in IE.
 
 #### applyLogLevel `applyLogLevel(level)`
-Set a level for logs (levels are the same as in `window.console`)
+Set a level for logs (levels are the same as in `window.console`).
+
 **Example:**
 
 	window.logger.applyLogLevel('debug');
@@ -21,9 +22,11 @@ It's a good idea to delete manager after application was started (by `delete win
 
 #### push `push(name, [beansNames,] actionOrBean)`
 Register beans in injectManager.
-*name* - name of the bean.
-*beansNames* - array of names of beans that must be inject in the current bean (This beans will be sent as arguments to *actionOrBeans*). **Available only when *actionOrBean* is a function**
-*actionOrBean* - bean that must be registered in **injectManager** or a function to initialize it. If it's a function, then bean will be initialized only when it will be injected somewhere. 
+
++ *name* - name of the bean.
++ *beansNames* - array of names of beans that must be inject in the current bean (This beans will be sent as arguments to *actionOrBeans*). **Available only when *actionOrBean* is a function**
++ *actionOrBean* - bean that must be registered in **injectManager** or a function to initialize it. If it's a function, then bean will be initialized only when it will be injected somewhere.
+ 
 **Example of use:**
 
 	window.application.injectionManager.push('someView', ['appState', 'someEvent'], 
@@ -39,6 +42,7 @@ Initialize beans that were registered with `pushStandalone`.
  
 #### applyFunction `applyFunction(beansNames, action)`
 Allowed to make some activities that must use beans. Can be used for configure application.
+
 **Example of use:**
 
 	window.application.injectionManager.applyFunction(['router'], function(router) {...});
@@ -60,10 +64,11 @@ Address of template with what view will be associated.
 
 #### events `Array`
 Structure of events:
-*selector* - string. Selector of a DOM element.
-*event* - string. JQuery event
-*call* - string. Name of callback function, this function must be declared in the view. The entrees param is `event`.
-*params* - Object, optional. Parameters that will be given to callback function as `event.data`
+
++ *selector* - string. Selector of a DOM element.
++ *event* - string. JQuery event
++ *call* - string. Name of callback function, this function must be declared in the view. The entrees param is `event`.
++ *params* - Object, optional. Parameters that will be given to callback function as `event.data`
 
 #### eventsApply `eventsApply()`
 Apply events to DOM elements. Should be called in `resolve`, after view will be rendered.
@@ -95,10 +100,11 @@ Data that will be given to `template`.
 
 #### events `Array`
 Structure of events:
-*selector* - string. Selector of a DOM element.
-*event* - string. JQuery event
-*call* - string. Name of callback function, this function must be declared in the view. The entrees param is `event`.
-*params* - Object, optional. Parameters that will be given to callback function as `event.data`
+
++ *selector* - string. Selector of a DOM element.
++ *event* - string. JQuery event
++ *call* - string. Name of callback function, this function must be declared in the view. The entrees param is `event`.
++ *params* - Object, optional. Parameters that will be given to callback function as `event.data`
 
 #### eventsApply `eventsApply()`
 Apply events to DOM elements. Should be called in `resolve`, after view will be rendered.
@@ -138,14 +144,15 @@ The builder for construct `Backbone.Router`. Log navigation to debug level. Save
 #### addBeginRoute `addBeginRoute(actionName, view)`
 Route that will be at the start page.
 
-*actionName* - name of the route.
-*view* - view that must be rendered on start page.
++ *actionName* - name of the route.
++ *view* - view that must be rendered on start page.
 
 #### addRoute `addRoute(path, actionName, action)`
 Add route.
-*path* - string. Route.
-*actionName* - name of the route.
-*action* - function or `View` that will be called on the *path*.
+
++ *path* - string. Route.
++ *actionName* - name of the route.
++ *action* - function or `View` that will be called on the *path*.
 
 #### addAdditionalOptions `addAdditionalOptions(options)`
 Some extra options for add to `Backbone.Router`.
