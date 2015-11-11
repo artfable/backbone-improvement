@@ -8,14 +8,12 @@ window.application.injectionManager.pushStandalone('mainPageView', ['router', 't
     return new (Backbone.View.extend({
         templateUrl: 'views/mainPage.html',
         mainView: templateView,
+        title: 'Main',
 
         container: '#container',
 
         afterInitialize: function() {
-            var that = this;
-            router.route('!/main', 'main', function() {
-                that.render.apply(that, arguments);
-            });
+            router.routeByView('!/main', 'main', this);
         },
 
         resolve: function() {

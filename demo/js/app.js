@@ -19,6 +19,9 @@ $(function() {
             logger.applyLogLevel(appState.get('logLevel'));
             logger.debug('[appState] The configurations were loaded.');
 
+            Backbone.View.prototype._commonTitleConfig = _.defaults(appState.get('commonTitleConfig'), Backbone.View.prototype._commonTitleConfig);
+            logger.log('[appState] Set common title ' + JSON.stringify(Backbone.View.prototype._commonTitleConfig));
+
             window.application.injectionManager.push('router',
                 Backbone.routerBuilder.addStateHolder(appState).build()
             );

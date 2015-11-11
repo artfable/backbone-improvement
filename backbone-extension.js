@@ -97,6 +97,7 @@ $(function() {
         if (this.template) {
             resolveMainView();
             logger.debug('[Backbone.View] Start resolve view "' + this.templateUrl + '".');
+            this.setTitle(this.title);
             this.resolve.apply(this, arguments);
         } else {
             var thatArguments = arguments;
@@ -104,6 +105,38 @@ $(function() {
                 logger.debug('[Backbone.View] "' + that.templateUrl + '" loaded.');
 				that.render.apply(that, thatArguments);
 			});
+        }
+    };
+
+    /**
+     * Configuration for common part of the title, for all views. Change it only for prototype.
+     *
+     * @type {{on: boolean, front: boolean, separator: string, text: string}}
+     * @private
+     */
+    Backbone.View.prototype._commonTitleConfig = {
+        on: false,
+        front: false,
+        separator: '|',
+        text: ''
+    };
+
+    /**
+     * Set page title and add common part to it, if it's turned on.
+     *
+     * @param {string} title
+     */
+    Backbone.View.prototype.setTitle = function(title) {
+        if (this._commonTitleConfig.on) {
+            if (title) {
+                var separator = ' ' + this._commonTitleConfig.separator + ' ';
+                title = this._commonTitleConfig.front ? this._commonTitleConfig.text + separator + title : title + separator + this._commonTitleConfig.text;
+            } else {
+                title = this._commonTitleConfig.text;
+            }
+        }
+        if (title) {
+            $('title').html(title);
         }
     };
 

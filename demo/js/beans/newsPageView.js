@@ -8,6 +8,7 @@ window.application.injectionManager.pushStandalone('newsPageView', ['router', 't
     return new (Backbone.View.extend({
         templateUrl: 'views/news.html',
         mainView: templateView,
+        title: 'News',
 
         container: '#container',
 
@@ -16,10 +17,7 @@ window.application.injectionManager.pushStandalone('newsPageView', ['router', 't
         }))(),
 
         afterInitialize: function() {
-            var that = this;
-            router.route('!/news', 'news', function() {
-                that.render.apply(that, arguments);
-            });
+            router.routeByView('!/news', 'news', this);
         },
 
         resolve: function() {

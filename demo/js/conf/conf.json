@@ -1,3 +1,8 @@
 {
-  "logLevel": "trace"
+  "logLevel": "trace",
+  "commonTitleConfig": {
+    "on": true,
+    "front": false,
+    "text": "Demo"
+  }
 }

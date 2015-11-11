@@ -24,9 +24,7 @@ window.application.injectionManager.pushStandalone('startView', ['router'], func
         afterInitialize: function() {
             var that = this;
             _.each(['', '!/', '/'], function(route) {
-                router.route(route, 'start', function() {
-                    that.render.apply(that, arguments);
-                });
+                router.routeByView(route, 'start', that);
             });
         },
 

@@ -79,6 +79,15 @@ Array of components that was associated with view.
 #### componentsRender `componentsRender([data])`
 Render `components` that was associated with view. Should be called in `resolve`, after view will be rendered. `Data` will be sent to an each component.
 
+#### title `string`
+Set it if you need to change title for page associated with this view.
+
+#### \_commonTitleConfig `Object` *default: {on: false, front: false, separator: '', text: ''}*
+Configuration for common part of the title, for all views. Change it only for prototype.
+
+#### setTitle `setTitle(title)`
+Set page title and add common part to it, if it's turned on (see `_commonTitleConfig`). 
+
 #### afterInitialize `afterInitialize()`
 Should be used instead of `initialize`.
 
