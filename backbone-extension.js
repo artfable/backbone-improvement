@@ -14,6 +14,8 @@ $(function() {
         window.logger = console;
     }
 
+    var logger = Logger ? new Logger('backboneExtension') : window.logger;
+
     /**
      * backbone работает не так как хотелось бы, по этому кастомизируем.
      * Если добавляем шаблоны каскадно - стандартный механизм эвентов работать не будет

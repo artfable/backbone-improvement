@@ -8,17 +8,22 @@ Backbone (http://backbonejs.org/)
 
 ## Logger
 Simple wrapper for console, can be used without backbone, underscore or jQuery. Can be used safely in IE.
+Set common logger to `window.logger`. For create named logger use `new Logger(name)`.
 
-#### applyLogLevel `applyLogLevel(level)`
+#### constructor `new Logger([name] [, level])` *default: name = 'common', level = 'info'*
+Create named logger.
+
+#### applyLogLevel `applyLogLevel(level [, name])`
 Set a level for logs (levels are the same as in `window.console`).
 
 **Example:**
 
 	window.logger.applyLogLevel('debug');
 	
-## InjectManager
+## InjectionManager
 Allow to write Backbone components ("beans") in independent file or code block, and initialize it only when it's needed. 
 It's a good idea to delete manager after application was started (by `delete window.application.injectionManager;`).
+If you use **Logger** - logger name will be 'injectionManager'.
 
 #### push `push(name, [beansNames,] actionOrBean)`
 Register beans in injectManager.
@@ -52,6 +57,7 @@ Tool for check application. Log in console all beans that were registered, but w
 
 ## Backbone extensions
 Some additions to backbone for simplifies application.
+If you use **Logger** - logger name will be 'backboneExtension'.
 
 ### View
 Additional methods to `Backbone.View` and some changes on it.
@@ -82,7 +88,7 @@ Render `components` that was associated with view. Should be called in `resolve`
 #### title `string`
 Set it if you need to change title for page associated with this view.
 
-#### \_commonTitleConfig `Object` *default: {on: false, front: false, separator: '', text: ''}*
+#### \_commonTitleConfig `Object` *default: {on: false, front: false, separator: '|', text: ''}*
 Configuration for common part of the title, for all views. Change it only for prototype.
 
 #### setTitle `setTitle(title)`

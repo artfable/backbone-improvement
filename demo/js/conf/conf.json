@@ -1,5 +1,9 @@
 {
-  "logLevel": "trace",
+  "logger": {
+    "common": "trace",
+    "injectionManager": "info",
+    "backboneExtension": "debug"
+  },
   "commonTitleConfig": {
     "on": true,
     "front": false,

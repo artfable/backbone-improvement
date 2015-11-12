@@ -16,7 +16,10 @@ $(function() {
 
     appState.fetch({
         success: function() {
-            logger.applyLogLevel(appState.get('logLevel'));
+            var loggersLevels = appState.get('logger');
+            _.each(_.keys(loggersLevels), function(loggerName) {
+                logger.applyLogLevel(loggersLevels[loggerName], loggerName);
+            });
             logger.debug('[appState] The configurations were loaded.');
 
             Backbone.View.prototype._commonTitleConfig = _.defaults(appState.get('commonTitleConfig'), Backbone.View.prototype._commonTitleConfig);
