@@ -22,7 +22,7 @@
      */
 	window.application = {
 		injectionManager: (function() {
-			var logger = Logger ? new Logger('injectionManager') : window.logger;
+			var logger = window.Logger ? new window.Logger('injectionManager') : window.logger;
 			var actions = {};
 			var beans = {};
             var standaloneBeansNames = [];
