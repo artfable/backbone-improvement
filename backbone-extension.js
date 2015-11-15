@@ -31,7 +31,11 @@ $(function() {
                 if (element.params) {
                     params = element.params;
                 }
-                $(element.selector).on(element.event, params, that[element.call]);
+                var selector = element.select;
+                if (_.isFunction(selector)) {
+                    selector = selector.apply(that);
+                }
+                $(selector).on(element.event, params, that[element.call]);
                 logger.log('[View] register ' + element.event + ' on ' + element.selector);
             });
         }

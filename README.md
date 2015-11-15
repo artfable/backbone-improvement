@@ -71,7 +71,7 @@ Address of template with what view will be associated.
 #### events `Array`
 Structure of events:
 
-+ *selector* - string. Selector of a DOM element.
++ *selector* - string or function. Selector of a DOM element. If function - must return string, `this` will be the View.
 + *event* - string. JQuery event
 + *call* - string. Name of callback function, this function must be declared in the view. The entrees param is `event`.
 + *params* - Object, optional. Parameters that will be given to callback function as `event.data`
@@ -116,7 +116,7 @@ Data that will be given to `template`.
 #### events `Array`
 Structure of events:
 
-+ *selector* - string. Selector of a DOM element.
++ *selector* - string or function. Selector of a DOM element. If function - must return string, `this` will be the View.
 + *event* - string. JQuery event
 + *call* - string. Name of callback function, this function must be declared in the view. The entrees param is `event`.
 + *params* - Object, optional. Parameters that will be given to callback function as `event.data`
