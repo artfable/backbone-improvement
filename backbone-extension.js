@@ -31,7 +31,7 @@ $(function() {
                 if (element.params) {
                     params = element.params;
                 }
-                var selector = element.select;
+                var selector = element.selector;
                 if (_.isFunction(selector)) {
                     selector = selector.apply(that);
                 }
