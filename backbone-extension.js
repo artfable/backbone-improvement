@@ -16,6 +16,23 @@ $(function() {
 
     var logger = window.Logger ? new window.Logger('backboneExtension') : window.logger;
 
+    // IE8 fix, better use sth like es5-shim (https://github.com/es-shims/es5-shim)
+    // Thanks stackoverflow.com for that code))
+    if (!Object.create) {
+        Object.create = function(o, properties) {
+            if (typeof o !== 'object' && typeof o !== 'function') throw new TypeError('Object prototype may only be an Object: ' + o);
+            else if (o === null) throw new Error("This browser's implementation of Object.create is a shim and doesn't support 'null' as the first argument.");
+
+            if (typeof properties != 'undefined') throw new Error("This browser's implementation of Object.create is a shim and doesn't support a second argument.");
+
+            function F() {}
+
+            F.prototype = o;
+
+            return new F();
+        };
+    }
+
     /**
      * backbone работает не так как хотелось бы, по этому кастомизируем.
      * Если добавляем шаблоны каскадно - стандартный механизм эвентов работать не будет
@@ -31,11 +48,12 @@ $(function() {
                 if (element.params) {
                     params = element.params;
                 }
-                var selector = element.select;
+                var selector = element.selector;
                 if (_.isFunction(selector)) {
                     selector = selector.apply(that);
                 }
-                $(selector).on(element.event, params, that[element.call]);
+                var $element = selector == that.el ? that.$el : that.$el.find(selector);
+                $element.on(element.event, params, that[element.call]);
                 logger.log('[View] register ' + element.event + ' on ' + element.selector);
             });
         }
@@ -44,6 +62,7 @@ $(function() {
     /**
      * Добавим к View отрисовку компонентов
      * @param data
+     * @deprecated
      */
     Backbone.View.prototype.componentsRender = function(data) {
         _.each(this.components, function(component) {
@@ -59,6 +78,7 @@ $(function() {
         var that = this;
         $.get(this.templateUrl, function(html) {
             that.template = _.template(html);
+            logger.debug('[Backbone.View] "' + that.templateUrl + '" loaded.');
 
             if (callback) {
                 callback();
@@ -70,47 +90,18 @@ $(function() {
      * Отрисовка страницы, обеспецивает загрузку шаблона, после чего вызывает {@link Backbone.View#resolve}
      */
     Backbone.View.prototype.render = function() {
-		var mainView = this.mainView;
-		var that = this;
-        var resolveMainView = function() {
-            if (!mainView) {
-                return;
-            }
-            if (!document.contains(mainView.el)) {
-                logger.warn('[Backbone.View] "$el" for "' + mainView.templateUrl + '" isn\'t in DOM');
-                mainView.resolve();
-            } else if (mainView.$el.attr('view') != mainView.cid) {
-                mainView.$el.attr('view', mainView.cid);
-                mainView.resolve();
-            }
+        var that = this;
+        var thatArguments = arguments;
+
+        var render = function() {
+            logger.debug('[Backbone.View] Start resolve view "' + that.templateUrl + '".');
+            that.resolve.apply(that, thatArguments);
+            that.setTitle(that.title);
         };
-        if (document.contains(this.el)) { // check that element in DOM
-            this.$el.removeAttr('view');
-        } else if (this.container) {
-            $(this.container).removeAttr('view');
-        } else {
-            logger.warn('[Backbone.View] View "' + this.cid + '" isn\'t attached to anyone DOM element.');
-        }
-		if (mainView && !mainView.template) {
-			if (!mainView.template) {
-				logger.debug('[Backbone.View] View "' + this.templateUrl + '" on "' + mainView.templateUrl + '".');
-				mainView.load(function() {
-					that.render.apply(that, arguments);
-				});
-				return;
-			}
-        }
         if (this.template) {
-            resolveMainView();
-            logger.debug('[Backbone.View] Start resolve view "' + this.templateUrl + '".');
-            this.setTitle(this.title);
-            this.resolve.apply(this, arguments);
+            render();
         } else {
-            var thatArguments = arguments;
-            this.load(function() {
-                logger.debug('[Backbone.View] "' + that.templateUrl + '" loaded.');
-				that.render.apply(that, thatArguments);
-			});
+            this.load(render);
         }
     };
 
@@ -151,6 +142,7 @@ $(function() {
      * @returns {Backbone.View}
      */
     Backbone.View.prototype.initialize = function() {
+        logger.debug('[Backbone.View] Initialize view "' + this.templateUrl + '"');
         if (this.resolve) {
             this.resolve = _.bind(this.resolve, this);
         }
@@ -160,11 +152,91 @@ $(function() {
         }
         return this;
     };
+//============= Page =====================
+    Backbone.Page = function(views, layout, layoutOptions) {
+        this.views = views;
+        this.layout = layout;
+        this.layoutOptions = layoutOptions;
+    };
+
+    Backbone.Page.prototype.render = function() {
+        var that = this;
+        var thatArguments = arguments;
+
+        this.layout.render(this.layoutOptions, function () {
+            _.each(that.views, function (metadata) {
+                metadata.view.render.apply(metadata.view, thatArguments);
+                that.layout.setRegion(metadata.region, metadata.view);
+            });
+        });
+    };
+
+    Backbone.Page.prototype.initialize = function() {
+        if (this.afterInitialize) {
+            this.afterInitialize = _.bind(this.afterInitialize, this);
+            this.afterInitialize();
+        }
+        return this;
+    };
+
+    Backbone.Page.extend = function(options) {
+        return function(extraOptions) {
+            var opt = _.extend({}, options, extraOptions);
+            return _.extend(new Backbone.Page(), opt).initialize();
+        }
+    };
+
+//============= Layout ===================
+    Backbone.Layout = function(options) {
+        logger.log('[Backbone.Layout] Creating layout for "' + options.el + '"');
+        _.extend(this, options);
+    };
+
+    Backbone.Layout.prototype = Object.create(Backbone.View.prototype);
+
+    Backbone.Layout.prototype.render = function(options, callback) {
+        var that = this;
+        var render = function() {
+            that._$content = $('<div></div>').append(that.template(options));
+            callback();
+            that.resolve();
+        };
+        if (this.template) {
+            render();
+        } else {
+            this.load(render)
+        }
+    };
+
+    Backbone.Layout.prototype.setRegion = function(region, view) {
+        if (view.$el.length == 0) {
+            logger.error('[Backbone.Layout] Incorrect el in view "' + view.cid + '" for "' + region + '" region');
+            return;
+        }
+        this._$content.find(region).append(view.$el);
+        logger.debug('[Backbone.Layout] Add view "' + view.cid + '" to region "' + region + '"');
+    };
+
+    Backbone.Layout.prototype.resolve = function() {
+        logger.log('[Backbone.Layout] Resolving layout for "' + this.el + '"');
+        this.$el.empty().append(this._$content.children());
+        this.eventsApply();
+    };
+
+    Backbone.Layout.extend = function(options) {
+        var layout = new Backbone.Layout(options);
+        return function(options) {
+            var initialized = _.extend(layout, options).initialize();
+            initialized._ensureElement();
+            return initialized;
+        }
+    };
 
 //============= Component ================
     /**
      * По сути View, но предназначен для того чтобы быть частью во View, а не отдельной страницей
      * @constructor
+     * @deprecated
      */
     Backbone.Component = function() {
         this.data = {};

@@ -2,22 +2,36 @@
  * @author artfable
  * 31.10.15
  */
-window.application.injectionManager.pushStandalone('mainPageView', ['router', 'templateView'], function(router, templateView) {
+window.application.injectionManager.push('mainPageView', function() {
     'use strict';
 
     return new (Backbone.View.extend({
         templateUrl: 'views/mainPage.html',
-        mainView: templateView,
         title: 'Main',
 
-        container: '#container',
+        resolve: function() {
+            this.$el.html(this.template());
+        }
+    }))();
+});
+
+window.application.injectionManager.pushStandalone('mainPage', ['TemplatePage', 'mainPageView', 'menuComponent', 'router'],
+    function(TemplatePage, mainPageView, menuComponent, router) {
+    'use strict';
+    return new TemplatePage({
+        views: [
+            {
+                region: '#menu',
+                view: menuComponent
+            },
+            {
+                region: '#container',
+                view: mainPageView
+            }
+        ],
 
         afterInitialize: function() {
             router.routeByView('!/main', 'main', this);
-        },
-
-        resolve: function() {
-            $(this.container).html(this.template());
         }
-    }))();
+    });
 });

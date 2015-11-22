@@ -4,29 +4,23 @@
  */
 window.application.injectionManager.push('menuComponent', ['appState', 'menuItemCollection'], function(appState, menuItemCollection) {
     'use strict';
-    return new (Backbone.Component.extend({
-        name: 'menu',
+    return new (Backbone.View.extend({
         templateUrl: 'views/components/menu.html',
 
-        afterInitialize: function() {
-            var that = this;
-            appState.on('change:page', function() {
-                that.render(appState.toJSON());
-            });
-        },
+        afterInitialize: function() {},
 
-        getData: function(callback, params) {
-            var that = this;
-
-            menuItemCollection.fetch({
-                success: function(collection) {
-                    that.data.menu = collection.toJSON();
-
-                    if (callback) {
-                        callback(params);
+        resolve: function() {
+            if (this.loaded) {
+                this.$el.html(this.template({menu: menuItemCollection.toJSON(), page: appState.get('page')}));
+            } else {
+                var that = this;
+                menuItemCollection.fetch({
+                    success: function (collection) {
+                        that.$el.html(that.template({menu: collection.toJSON(), page: appState.get('page')}));
+                        that.loaded = true;
                     }
-                }
-            });
+                });
+            }
         }
     }))();
 });
