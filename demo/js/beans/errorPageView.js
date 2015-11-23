@@ -2,7 +2,7 @@
  * @author artfable
  * 31.10.15
  */
-window.application.injectionManager.push('errorPageView', function() {
+define('errorPageView', function() {
     'use strict';
 
     return new (Backbone.View.extend({
@@ -15,7 +15,7 @@ window.application.injectionManager.push('errorPageView', function() {
 });
 
 
-window.application.injectionManager.pushStandalone('errorPage', ['TemplatePage', 'errorPageView', 'menuComponent'],
+require(['TemplatePage', 'errorPageView', 'menuComponent'],
     function (TemplatePage, errorPageView, menuComponent) {
         'use strict';
         return new TemplatePage({

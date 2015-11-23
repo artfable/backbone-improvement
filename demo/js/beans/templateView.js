@@ -2,7 +2,7 @@
  * @author artfable
  * 31.10.15
  */
-window.application.injectionManager.push('templateLayout', function () {
+define('templateLayout', function () {
     'use strict';
 
     return new (Backbone.Layout.extend({
@@ -11,7 +11,7 @@ window.application.injectionManager.push('templateLayout', function () {
     }))();
 });
 
-window.application.injectionManager.push('TemplatePage', ['templateLayout', 'menuComponent', 'appState'],
+define('TemplatePage', ['templateLayout', 'menuComponent', 'appState'],
     function(templateLayout, menuComponent, appState) {
         'use strict';
         return Backbone.Page.extend({

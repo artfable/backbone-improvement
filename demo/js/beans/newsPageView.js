@@ -2,7 +2,7 @@
  * @author artfable
  * 01.11.15
  */
-window.application.injectionManager.push('newsPageView', function() {
+define('newsPageView', function() {
     'use strict';
 
     return new (Backbone.View.extend({
@@ -24,7 +24,7 @@ window.application.injectionManager.push('newsPageView', function() {
     }))();
 });
 
-window.application.injectionManager.pushStandalone('newsPage', ['TemplatePage', 'newsPageView', 'menuComponent', 'router'],
+require(['TemplatePage', 'newsPageView', 'menuComponent', 'router'],
     function (TemplatePage, newsPageView, menuComponent, router) {
         'use strict';
         return new TemplatePage({

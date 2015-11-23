@@ -2,7 +2,7 @@
  * @author artfable
  * 31.10.15
  */
-window.application.injectionManager.pushStandalone('startView', ['router'], function(router) {
+require(['router'], function(router) {
     'use strict';
 
     return new (Backbone.View.extend({

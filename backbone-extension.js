@@ -218,7 +218,7 @@ $(function() {
     };
 
     Backbone.Layout.prototype.resolve = function() {
-        logger.log('[Backbone.Layout] Resolving layout for "' + this.el + '"');
+        logger.log('[Backbone.Layout] Resolving layout for "' + (_.isObject(this.el) ? this.$el.selector : this.el) + '"');
         this.$el.empty().append(this._$content.children());
         this.eventsApply();
     };

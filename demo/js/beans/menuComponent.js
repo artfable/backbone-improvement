@@ -2,7 +2,7 @@
  * @author artfable
  * 31.10.15
  */
-window.application.injectionManager.push('menuComponent', ['appState', 'menuItemCollection'], function(appState, menuItemCollection) {
+define('menuComponent', ['appState', 'menuItemCollection'], function(appState, menuItemCollection) {
     'use strict';
     return new (Backbone.View.extend({
         templateUrl: 'views/components/menu.html',
