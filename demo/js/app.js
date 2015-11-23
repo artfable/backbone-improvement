@@ -5,6 +5,12 @@
 $(function() {
     'use strict';
 
+    requirejs.config({
+        callback: function() {
+            Backbone.history.start();
+        }
+    });
+
     var appState = new (Backbone.Model.extend({
         url: 'js/conf/conf.json',
         defaults: {
@@ -26,8 +32,6 @@ $(function() {
 
             Backbone.View.prototype._commonTitleConfig = _.defaults(appState.get('commonTitleConfig'), Backbone.View.prototype._commonTitleConfig);
             logger.log('[appState] Set common title ' + JSON.stringify(Backbone.View.prototype._commonTitleConfig));
-
-            Backbone.history.start();
 
             logger.debug('[appState] The application was started.');
         }
