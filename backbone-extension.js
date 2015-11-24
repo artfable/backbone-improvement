@@ -133,7 +133,7 @@ $(function() {
             }
         }
         if (title) {
-            $('title').html(title);
+            document.title = title;
         }
     };
 
