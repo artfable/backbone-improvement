@@ -15,23 +15,25 @@ define('mainPageView', function() {
     }))();
 });
 
-require(['TemplatePage', 'mainPageView', 'menuComponent', 'router'],
-    function(TemplatePage, mainPageView, menuComponent, router) {
-    'use strict';
-    return new TemplatePage({
-        views: [
-            {
-                region: '#menu',
-                view: menuComponent
-            },
-            {
-                region: '#container',
-                view: mainPageView
-            }
-        ],
+$(function() {
+    require(['TemplatePage', 'mainPageView', 'menuComponent', 'router'],
+        function(TemplatePage, mainPageView, menuComponent, router) {
+            'use strict';
+            return new TemplatePage({
+                views: [
+                    {
+                        region: '#menu',
+                        view: menuComponent
+                    },
+                    {
+                        region: '#container',
+                        view: mainPageView
+                    }
+                ],
 
-        afterInitialize: function() {
-            router.routeByView('!/main', 'main', this);
-        }
-    });
+                afterInitialize: function() {
+                    router.routeByView('!/main', 'main', this);
+                }
+            });
+        })
 });

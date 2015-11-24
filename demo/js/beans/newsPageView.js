@@ -24,23 +24,25 @@ define('newsPageView', function() {
     }))();
 });
 
-require(['TemplatePage', 'newsPageView', 'menuComponent', 'router'],
-    function (TemplatePage, newsPageView, menuComponent, router) {
-        'use strict';
-        return new TemplatePage({
-            views: [
-                {
-                    region: '#menu',
-                    view: menuComponent
-                },
-                {
-                    region: '#container',
-                    view: newsPageView
-                }
-            ],
+$(function() {
+    require(['TemplatePage', 'newsPageView', 'menuComponent', 'router'],
+        function(TemplatePage, newsPageView, menuComponent, router) {
+            'use strict';
+            return new TemplatePage({
+                views: [
+                    {
+                        region: '#menu',
+                        view: menuComponent
+                    },
+                    {
+                        region: '#container',
+                        view: newsPageView
+                    }
+                ],
 
-            afterInitialize: function () {
-                router.routeByView('!/news', 'news', this);
-            }
-        });
-    });
+                afterInitialize: function() {
+                    router.routeByView('!/news', 'news', this);
+                }
+            });
+        })
+});
