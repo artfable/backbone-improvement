@@ -4,9 +4,6 @@
  * 23.03.2015.
  */
 
-/**
- * Так как сам backbone инициализируется после document ready, то и нам нужно ждать, чтобы применить свою кастомизацию
- */
 $(function() {
 
     // Если не объявлен свой логер, используем обычную консоль
@@ -181,6 +178,9 @@ $(function() {
 
     Backbone.Page.extend = function(options) {
         return function(extraOptions) {
+            if (extraOptions.views && options.views) {
+                extraOptions.views = _.union(extraOptions.views, options.views); // not exclude duplicates!
+            }
             var opt = _.extend({}, options, extraOptions);
             return _.extend(new Backbone.Page(), opt).initialize();
         }
@@ -221,6 +221,10 @@ $(function() {
         logger.log('[Backbone.Layout] Resolving layout for "' + (_.isObject(this.el) ? this.$el.selector : this.el) + '"');
         this.$el.empty().append(this._$content.children());
         this.eventsApply();
+
+        if (this.afterRender) {
+            this.afterRender.apply(this, arguments);
+        }
     };
 
     Backbone.Layout.extend = function(options) {
@@ -379,6 +383,12 @@ $(function() {
             routeByView: function(route, name, view) {
                 this.route(route, name, function() {
                     view.render.apply(view, arguments);
+                });
+            },
+            routeStartView: function(name, view) {
+                var that = this;
+                _.each(['', '!', '!/', '/'], function(route) {
+                    that.routeByView(route, name, view);
                 });
             }
         };
