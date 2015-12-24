@@ -93,7 +93,9 @@ $(function() {
         var render = function() {
             logger.debug('[Backbone.View] Start resolve view "' + that.templateUrl + '".');
             that.resolve.apply(that, thatArguments);
-            that.setTitle(that.title);
+            if (!_.isUndefined(that.title)) {
+                that.setTitle(that.title);
+            }
         };
         if (this.template) {
             render();
@@ -121,12 +123,13 @@ $(function() {
      * @param {string} title
      */
     Backbone.View.prototype.setTitle = function(title) {
-        if (this._commonTitleConfig.on) {
+        var commonTitleConfig = this._commonTitleConfig || Backbone.View.prototype._commonTitleConfig;
+        if (commonTitleConfig.on) {
             if (title) {
-                var separator = ' ' + this._commonTitleConfig.separator + ' ';
-                title = this._commonTitleConfig.front ? this._commonTitleConfig.text + separator + title : title + separator + this._commonTitleConfig.text;
+                var separator = ' ' + commonTitleConfig.separator + ' ';
+                title = commonTitleConfig.front ? commonTitleConfig.text + separator + title : title + separator + commonTitleConfig.text;
             } else {
-                title = this._commonTitleConfig.text;
+                title = commonTitleConfig.text;
             }
         }
         if (title) {
@@ -155,6 +158,8 @@ $(function() {
         this.layout = layout;
         this.layoutOptions = layoutOptions;
     };
+
+    Backbone.Page.prototype.setTitle = Backbone.View.prototype.setTitle;
 
     Backbone.Page.prototype.render = function() {
         var that = this;

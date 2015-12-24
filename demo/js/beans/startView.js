@@ -8,6 +8,7 @@ $(function() {
 
         return new (Backbone.View.extend({
             templateUrl: 'views/start.html',
+            title: '',
             el: 'body',
 
             events: [
