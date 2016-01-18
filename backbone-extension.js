@@ -165,7 +165,9 @@ $(function() {
         var that = this;
         var thatArguments = arguments;
 
-        this.layout.render(this.layoutOptions, function () {
+        var layoutOptions = this.layoutOptions instanceof Backbone.Model ? this.layoutOptions.toJSON() : this.layoutOptions;
+
+        this.layout.render(layoutOptions, function () {
             _.each(that.views, function (metadata) {
                 metadata.view.render.apply(metadata.view, thatArguments);
                 that.layout.setRegion(metadata.region, metadata.view);
@@ -202,7 +204,7 @@ $(function() {
     Backbone.Layout.prototype.render = function(options, callback) {
         var that = this;
         var render = function() {
-            that._$content = $('<div></div>').append(that.template(options));
+            that._$content = $('<div></div>').append(that.template({options: options}));
             callback();
             that.resolve();
         };

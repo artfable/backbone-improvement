@@ -16,6 +16,6 @@ define('TemplatePage', ['templateLayout', 'menuComponent', 'appState'],
         'use strict';
         return Backbone.Page.extend({
             layout: templateLayout,
-            layoutOptions: appState.toJSON() // only configurations, we don't want any changeable information here
+            layoutOptions: appState // yes, now we allowed to keep here a changeable data, but think twice, before do it!
         });
     });
