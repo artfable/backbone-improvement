@@ -6,7 +6,7 @@
 
 $(function() {
 
-    // Если не объявлен свой логер, используем обычную консоль
+    // If logger not set, will use common console
     if (window.logger === undefined) {
         window.logger = console;
     }
@@ -31,10 +31,10 @@ $(function() {
     }
 
     /**
-     * backbone работает не так как хотелось бы, по этому кастомизируем.
-     * Если добавляем шаблоны каскадно - стандартный механизм эвентов работать не будет
+     * Backbone events work not as we would like, so some changes
+     * In Backbone, if add templates cascade - default way of events won't be work
      *
-     * Эвенты не должны распространяться на какие-либо элементы внутри дочерних {@link View} или {@link Component}
+     * Events shouldn't be set for any child {@link View}.
      */
     Backbone.View.prototype.eventsApply = function() {
         var that = this;
@@ -56,19 +56,9 @@ $(function() {
         }
     };
 
-    /**
-     * Добавим к View отрисовку компонентов
-     * @param data
-     * @deprecated
-     */
-    Backbone.View.prototype.componentsRender = function(data) {
-        _.each(this.components, function(component) {
-            component.render(data);
-        })
-    };
 
     /**
-     * Загрузка шаблона страницы
+     * Load template of a view
      * @param callback
      */
     Backbone.View.prototype.load = function(callback) {
@@ -84,7 +74,7 @@ $(function() {
     };
 
     /**
-     * Отрисовка страницы, обеспецивает загрузку шаблона, после чего вызывает {@link Backbone.View#resolve}
+     * Render of view, load template and after it call {@link Backbone.View#resolve}
      */
     Backbone.View.prototype.render = function() {
         var that = this;
@@ -110,7 +100,7 @@ $(function() {
      * @type {{on: boolean, front: boolean, separator: string, text: string}}
      * @private
      */
-    Backbone.View.prototype._commonTitleConfig = {
+    Backbone._commonTitleConfig = {
         on: false,
         front: false,
         separator: '|',
@@ -123,7 +113,7 @@ $(function() {
      * @param {string} title
      */
     Backbone.View.prototype.setTitle = function(title) {
-        var commonTitleConfig = this._commonTitleConfig || Backbone.View.prototype._commonTitleConfig;
+        var commonTitleConfig = this._commonTitleConfig || Backbone._commonTitleConfig;
         if (commonTitleConfig.on) {
             if (title) {
                 var separator = ' ' + commonTitleConfig.separator + ' ';
@@ -138,7 +128,7 @@ $(function() {
     };
 
     /**
-     * Инициализация {@link Backbone.View}
+     * Initialization of {@link Backbone.View}
      * @returns {Backbone.View}
      */
     Backbone.View.prototype.initialize = function() {
@@ -164,6 +154,8 @@ $(function() {
     Backbone.Page.prototype.render = function() {
         var that = this;
         var thatArguments = arguments;
+
+        this.setTitle();
 
         var layoutOptions = this.layoutOptions instanceof Backbone.Model ? this.layoutOptions.toJSON() : this.layoutOptions;
 
@@ -215,6 +207,11 @@ $(function() {
         }
     };
 
+    /**
+     * Add view to chosen region
+     * @param {string} region - selector of DOM element
+     * @param {Backbone.View} view
+     */
     Backbone.Layout.prototype.setRegion = function(region, view) {
         if (view.$el.length == 0) {
             logger.error('[Backbone.Layout] Incorrect el in view "' + view.cid + '" for "' + region + '" region');
@@ -243,135 +240,9 @@ $(function() {
         }
     };
 
-//============= Component ================
-    /**
-     * По сути View, но предназначен для того чтобы быть частью во View, а не отдельной страницей
-     * @constructor
-     * @deprecated
-     */
-    Backbone.Component = function() {
-        this.data = {};
-    };
 
     /**
-     * Переопределить если требуется выполнить какие либо действия сразу после создания компонента
-     */
-    Backbone.Component.prototype.afterInitialize = function() {
-    };
-
-    /**
-     * Завершает создание компонента.
-     */
-    Backbone.Component.prototype.initialize = function() {
-        _.bindAll(this, 'render', 'afterInitialize', 'beforeRender', 'afterRender');
-        var that = this;
-        this.getData(function() {
-            that.data._componentId = that.getId();
-            that.afterInitialize();
-            that.loaded = true;
-        });
-    };
-
-    /**
-     * Если данные компонента не статичны, нужно получать их в данном методе
-     * @param callback
-     * @param params
-     */
-    Backbone.Component.prototype.getData = function(callback, params) {
-        if (callback) {
-            callback(params);
-        }
-    };
-
-    /**
-     * @returns {string} - уникальный id, необходим при использование нескольких однотипных компонентов на ui
-     */
-    Backbone.Component.prototype.getId = function() {
-        if (!this.id) {
-            this.id = _.uniqueId(this.name + '_');
-        }
-        return this.id;
-    };
-
-    /**
-     * Переопределить если требуется выполнить дополнительные действия после рендоринга
-     */
-    Backbone.Component.prototype.afterRender = function() {
-    };
-
-    /**
-     * Можно переопределить, если требуется выполнять какие либо действия до отрисовки компонента,
-     * обязательно должен вызывать {@param callback}
-     * @param callback
-     */
-    Backbone.Component.prototype.beforeRender = function(callback) {
-        if (callback) {
-            callback();
-        }
-    };
-
-    /**
-     * Отрисовывает компонент.
-     *
-     * @param data - дополнительные данные (например если компонент использует данные из View)
-     */
-    Backbone.Component.prototype.render = function(data) {
-        var that = this;
-        this.beforeRender(function() {
-            logger.log('[Backbone.Component] Render component ' + that.name);
-            if (!that.loaded) {
-                that.getData(function(data) {
-                    that.loaded = true;
-                    that.render(data);
-                }, data);
-                return;
-            }
-            var component = that.$component = $('[component=' + that.name + ']');
-            if (component.length > 0) {
-                var render = function() {
-                    component.html(that.template(_.extend(that.data, data)));
-                    that.eventsApply();
-                    that.afterRender();
-                };
-                if (_.isFunction(that.template)) {
-                    render();
-                } else {
-                    if (!that.templateUrl) {
-                        logger.error('[Backbone.Component] No "templateUrl" property for component "' + that.name + '"');
-                        return;
-                    }
-                    $.get(that.templateUrl, function(template) {
-                        that.template = _.template(template);
-                        render();
-                    });
-                }
-            }
-        });
-    };
-
-    /**
-     * @see Backbone.View.prototype.eventsApply
-     * @type {Function}
-     */
-    Backbone.Component.prototype.eventsApply = Backbone.View.prototype.eventsApply;
-
-    /**
-     * Предоставляет тот же интерфейс, но принцип отличается от Backbone, так как так удобней, и нет смысла в лишних сложностях
-     * @param object
-     * @returns {Function}
-     */
-    Backbone.Component.extend = function(object) {
-        return function(options) {
-            var newComponent = _.extend(new Backbone.Component(), object);
-            _.extend(newComponent, options);
-            logger.log('[Backbone.Component] Creating component ' + newComponent.name);
-            newComponent.initialize();
-            return newComponent;
-        }
-    };
-
-    /**
-     * Упрощеный способ конфигурации {@link Backbone.Router}
+     * Simplified way to configure {@link Backbone.Router}
      * @type {{addStateHolder, addRoute, addAdditionalOptions, build}}
      */
     Backbone.routerBuilder = (function() {
@@ -402,7 +273,7 @@ $(function() {
 
         return {
             /**
-             * Будет хранить идентификатор открытой страницы
+             * Will keep id of open page.
              * @param {Backbone.Model} stateHolder
              */
             addStateHolder: function(stateHolder) {
@@ -410,24 +281,23 @@ $(function() {
                 return this;
             },
 
-            addBeginRoute: function(actionName, view) {
+            addBeginRoute: function(actionName, action) {
                 var startRoutes = ['', '!/', '/'];
-                var startAction = function() {
-                    // for save 'this'
-                    view.render();
-                };
+                if (action.render) {
+                    action = _.bind(action.render, action);
+                }
+                routeOptions[actionName] = action;
                 _.each(startRoutes, function(route) {
                     routes[route] = actionName;
-                    routeOptions[actionName] = startAction;
                 });
                 return this;
             },
 
             /**
-             * Добавляет путь
+             * Add path.
              * @param {string} path
-             * @param {string} actionName - идентификатор страницы
-             * @param {Function | Backbone.View} action -
+             * @param {string} actionName - page's id
+             * @param {Function | Backbone.View} action - action or view that must be starts
              */
             addRoute: function(path, actionName, action) {
                 routes[path] = actionName;
@@ -439,7 +309,7 @@ $(function() {
             },
 
             /**
-             * Дополнительные опции для {@link Backbone.Router}
+             * Additional options for {@link Backbone.Router}
              * @param {=} options
              */
             addAdditionalOptions: function(options) {
@@ -448,7 +318,7 @@ $(function() {
             },
 
             /**
-             * Заверщает сборку {@link Backbone.Router} и запускает его
+             * Ends build of {@link Backbone.Router} and starts it
              * @returns {Function|void|*}
              */
             build: function() {

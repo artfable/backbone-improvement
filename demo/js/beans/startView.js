@@ -24,10 +24,7 @@ $(function() {
             },
 
             afterInitialize: function() {
-                var that = this;
-                _.each(['', '!/', '/'], function(route) {
-                    router.routeByView(route, 'start', that);
-                });
+                router.routeStartView('start', this);
             },
 
             resolve: function() {
