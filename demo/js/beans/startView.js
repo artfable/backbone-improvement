@@ -11,13 +11,17 @@ $(function() {
             title: '',
             el: 'body',
 
-            events: [
-                {
-                    selector: '#start_btn',
-                    event: 'click',
-                    call: 'start'
-                }
-            ],
+            //events: [
+            //    {
+            //        selector: '#start_btn',
+            //        event: 'click',
+            //        call: 'start'
+            //    }
+            //],
+
+            events: {
+                'click #start_btn': 'start'
+            },
 
             start: function() {
                 router.navigate('!/main', {trigger: true});
@@ -43,7 +47,7 @@ $(function() {
                 };
                 moveRight();
 
-                this.eventsApply();
+                //this.eventsApply();
             }
         }))();
     })

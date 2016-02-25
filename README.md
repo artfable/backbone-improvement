@@ -41,6 +41,7 @@ Address of template with what view will be associated.
 [Underscore](http://underscorejs.org/) template from file that was define in `templateUrl`.
 
 #### events `Array`
+**Deprecated**, use origin [Backbone events](http://backbonejs.org/#View-events). <br/>
 Structure of events:
 
 + *selector* - string or function. Selector of a DOM element. If function - must return string, `this` will be the View.
@@ -49,6 +50,7 @@ Structure of events:
 + *params* - Object, optional. Parameters that will be given to callback function as `event.data`
 
 #### eventsApply `eventsApply()`
+**Deprecated**, use origin [Backbone events](http://backbonejs.org/#View-events). <br/>
 Apply events to DOM elements. Should be called in `resolve`, after view will be rendered.
 
 #### title `string`

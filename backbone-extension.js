@@ -35,6 +35,7 @@ $(function() {
      * In Backbone, if add templates cascade - default way of events won't be work
      *
      * Events shouldn't be set for any child {@link View}.
+     * @deprecated
      */
     Backbone.View.prototype.eventsApply = function() {
         var that = this;
@@ -92,6 +93,8 @@ $(function() {
         } else {
             this.load(render);
         }
+
+        return this;
     };
 
     /**
@@ -165,6 +168,8 @@ $(function() {
                 that.layout.setRegion(metadata.region, metadata.view);
             });
         });
+
+        return this;
     };
 
     Backbone.Page.prototype.initialize = function() {
