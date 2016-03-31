@@ -246,6 +246,13 @@ $(function() {
     };
 
 
+    Backbone.History.prototype.restart = function() {
+        if (Backbone.History.started) {
+            this.stop();
+            this.start();
+        }
+    };
+
     /**
      * Simplified way to configure {@link Backbone.Router}
      * @type {{addStateHolder, addRoute, addAdditionalOptions, build}}
@@ -273,6 +280,11 @@ $(function() {
                 _.each(['', '!', '!/', '/'], function(route) {
                     that.routeByView(route, name, view);
                 });
+            },
+            route: function() {
+                var router = Backbone.Router.prototype.route.apply(this, arguments);
+                Backbone.history.restart();
+                return router;
             }
         };
 
@@ -332,7 +344,9 @@ $(function() {
                     return undefined;
                 }
 
-                return new (Backbone.Router.extend(routeOptions))();
+                var router = new (Backbone.Router.extend(routeOptions))();
+                Backbone.history.start();
+                return router;
             }
         }
     })();

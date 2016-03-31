@@ -5,12 +5,6 @@
 $(function() {
     'use strict';
 
-    requirejs.config({
-        callback: function() {
-            Backbone.history.start();
-        }
-    });
-
     var appState = new (Backbone.Model.extend({
         url: 'js/conf/conf.json',
         defaults: {
