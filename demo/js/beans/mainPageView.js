@@ -7,7 +7,6 @@ define('mainPageView', function() {
 
     return new (Backbone.View.extend({
         templateUrl: 'views/mainPage.html',
-        title: 'Main',
 
         resolve: function() {
             this.$el.html(this.template());
@@ -20,6 +19,7 @@ $(function() {
         function(TemplatePage, mainPageView, menuComponent, router) {
             'use strict';
             return new TemplatePage({
+                title: 'Main',
                 views: [
                     {
                         region: '#menu',

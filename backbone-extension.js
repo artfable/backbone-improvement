@@ -158,7 +158,7 @@ $(function() {
         var that = this;
         var thatArguments = arguments;
 
-        this.setTitle();
+        this.setTitle(this.title);
 
         var layoutOptions = this.layoutOptions instanceof Backbone.Model ? this.layoutOptions.toJSON() : this.layoutOptions;
 
