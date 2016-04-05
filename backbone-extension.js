@@ -4,7 +4,7 @@
  * 23.03.2015.
  */
 
-$(function() {
+;(function() {
 
     // If logger not set, will use common console
     if (window.logger === undefined) {
@@ -245,14 +245,6 @@ $(function() {
         }
     };
 
-
-    Backbone.History.prototype.restart = function() {
-        if (Backbone.History.started) {
-            this.stop();
-            this.start();
-        }
-    };
-
     /**
      * Simplified way to configure {@link Backbone.Router}
      * @type {{addStateHolder, addRoute, addAdditionalOptions, build}}
@@ -281,9 +273,12 @@ $(function() {
                     that.routeByView(route, name, view);
                 });
             },
-            route: function() {
+            route: function(route) {
                 var router = Backbone.Router.prototype.route.apply(this, arguments);
-                Backbone.history.restart();
+                var path = location.hash.replace('#', '');
+                if (Backbone.History.started && this._routeToRegExp(route).test(path)) {
+                    Backbone.history.loadUrl(path);
+                }
                 return router;
             }
         };
@@ -350,4 +345,4 @@ $(function() {
             }
         }
     })();
-});
+})();
