@@ -30,6 +30,20 @@
         };
     }
 
+
+    // Kludge for set real element if it was called before document ready (need only for IE).
+    var originSetElement = Backbone.View.prototype.setElement;
+    Backbone.View.prototype.setElement = function() {
+        var that = this;
+        var thatArguments = arguments;
+
+        $(function() {
+            originSetElement.apply(that, thatArguments);
+        });
+
+        return originSetElement.apply(this, arguments);
+    };
+
     /**
      * Backbone events work not as we would like, so some changes
      * In Backbone, if add templates cascade - default way of events won't be work
@@ -96,6 +110,11 @@
 
         return this;
     };
+
+    /**
+     * For override. Do the same, that did 'render' in the original.
+     */
+    Backbone.View.prototype.resolve = function() {};
 
     /**
      * Configuration for common part of the title, for all views. Change it only for prototype.
