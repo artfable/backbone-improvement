@@ -27,6 +27,7 @@ $(function() {
             Backbone._commonTitleConfig = _.defaults(appState.get('commonTitleConfig'), Backbone._commonTitleConfig);
             logger.log('[appState] Set common title ' + JSON.stringify(Backbone.View.prototype._commonTitleConfig));
 
+            Backbone.history.start();
             logger.debug('[appState] The application was started.');
         }
     })

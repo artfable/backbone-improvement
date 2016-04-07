@@ -222,7 +222,7 @@
         var render = function() {
             that._$content = $('<div></div>').append(that.template({options: options}));
             callback();
-            that.resolve();
+            that.resolve(options);
         };
         if (this.template) {
             render();
@@ -350,16 +350,19 @@
 
             /**
              * Ends build of {@link Backbone.Router} and starts it
+             * @param {boolean} start - set true to start Backbone.history
              * @returns {Function|void|*}
              */
-            build: function() {
+            build: function(start) {
                 if (!state) {
                     logger.error('[Backbone.routerBuilder] Can\'t start router, because there is no stateHolder');
                     return undefined;
                 }
 
                 var router = new (Backbone.Router.extend(routeOptions))();
-                Backbone.history.start();
+                if (start) {
+                    Backbone.history.start();
+                }
                 return router;
             }
         }
