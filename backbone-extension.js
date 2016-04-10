@@ -45,6 +45,76 @@
     };
 
     /**
+     * Cache for templates.
+     * @type {{}}
+     */
+    var templateHolder = {};
+
+    /**
+     * Preferences for the extension.
+     */
+    var bextSettings = {
+        commonTitleConfig: {
+            on: false,
+            front: false,
+            separator: '|',
+            text: ''
+        },
+        templateCache: true
+    };
+
+    /**
+     * Some configurations of the backbone-extension
+     */
+    Backbone.bextSettings = {
+        /**
+         * Set cache for templates enable or not.
+         * @param {boolean} enable
+         */
+        setCacheEnable: function(enable) {
+            bextSettings.templateCache = enable;
+        },
+
+        /**
+         * Is templates cache enable.
+         * @returns {boolean}
+         * @default true
+         */
+        isCacheEnable: function() {
+            return bextSettings.templateCache;
+        },
+
+        /**
+         * Configuration for common part of the title, for all pages or views.
+         * @param {{on: boolean, front: boolean, separator: string, text: string}} commonTitleConfig
+         * @throw TypeError - if you try to set `separator` or `text`, that aren't strings
+         */
+        setCommonTitleConfig: function(commonTitleConfig) {
+            var settings = _.pick(commonTitleConfig, 'on', 'front', 'separator', 'text');
+            if ((settings.separator && !_.isString(settings.separator)) || (settings.text && !_.isString(settings.text))) {
+                throw new TypeError('Invalid title configuration.');
+            }
+            bextSettings.commonTitleConfig = _.defaults(settings, bextSettings.commonTitleConfig);
+        },
+
+        /**
+         * Copy of title configuration.
+         * @returns {{on: boolean, front: boolean, separator: string, text: string}}
+         * @default {on: false, front: false, separator: '|', text: ''}
+         */
+        getCommonTitleConfig: function() {
+            return _.extend({}, bextSettings.commonTitleConfig);
+        },
+
+        /**
+         * All preferences in string format.
+         */
+        toString: function() {
+            return JSON.stringify(bextSettings);
+        }
+    };
+
+    /**
      * Backbone events work not as we would like, so some changes
      * In Backbone, if add templates cascade - default way of events won't be work
      *
@@ -78,8 +148,20 @@
      */
     Backbone.View.prototype.load = function(callback) {
         var that = this;
+        if (bextSettings.templateCache && templateHolder[this.templateUrl]) {
+            that.template = templateHolder[this.templateUrl];
+
+            if (callback) {
+                callback();
+            }
+            return;
+        }
+
         $.get(this.templateUrl, function(html) {
             that.template = _.template(html);
+            if (bextSettings.templateCache) {
+                templateHolder[that.templateUrl] = that.template;
+            }
             logger.debug('[Backbone.View] "' + that.templateUrl + '" loaded.');
 
             if (callback) {
@@ -117,25 +199,12 @@
     Backbone.View.prototype.resolve = function() {};
 
     /**
-     * Configuration for common part of the title, for all views. Change it only for prototype.
-     *
-     * @type {{on: boolean, front: boolean, separator: string, text: string}}
-     * @private
-     */
-    Backbone._commonTitleConfig = {
-        on: false,
-        front: false,
-        separator: '|',
-        text: ''
-    };
-
-    /**
      * Set page title and add common part to it, if it's turned on.
      *
      * @param {string} title
      */
     Backbone.View.prototype.setTitle = function(title) {
-        var commonTitleConfig = this._commonTitleConfig || Backbone._commonTitleConfig;
+        var commonTitleConfig = this._commonTitleConfig || bextSettings.commonTitleConfig;
         if (commonTitleConfig.on) {
             if (title) {
                 var separator = ' ' + commonTitleConfig.separator + ' ';
