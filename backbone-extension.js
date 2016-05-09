@@ -114,33 +114,6 @@
         }
     };
 
-    /**
-     * Backbone events work not as we would like, so some changes
-     * In Backbone, if add templates cascade - default way of events won't be work
-     *
-     * Events shouldn't be set for any child {@link View}.
-     * @deprecated
-     */
-    Backbone.View.prototype.eventsApply = function() {
-        var that = this;
-        // используем jquery, так как ie8 не знает forEach
-        if (this.events) {
-            $.each(this.events, function(key, element) {
-                var params = {};
-                if (element.params) {
-                    params = element.params;
-                }
-                var selector = element.selector;
-                if (_.isFunction(selector)) {
-                    selector = selector.apply(that);
-                }
-                var $element = selector == that.el ? that.$el : that.$el.find(selector);
-                $element.on(element.event, params, that[element.call]);
-                logger.log('[View] register ' + element.event + ' on ' + element.selector);
-            });
-        }
-    };
-
 
     /**
      * Load template of a view
@@ -228,8 +201,7 @@
             this.resolve = _.bind(this.resolve, this);
         }
         if (this.afterInitialize) {
-            this.afterInitialize = _.bind(this.afterInitialize, this);
-            this.afterInitialize();
+            this.afterInitialize.apply(this, arguments);
         }
         return this;
     };
@@ -249,6 +221,12 @@
         this.setTitle(this.title);
 
         var layoutOptions = this.layoutOptions instanceof Backbone.Model ? this.layoutOptions.toJSON() : this.layoutOptions;
+
+        this.layout.once('renderComplete', function() {
+            _.each(that.views, function(metadata) {
+                metadata.view.trigger('layoutRenderComplete');
+            });
+        });
 
         this.layout.render(layoutOptions, function () {
             _.each(that.views, function (metadata) {
@@ -281,7 +259,7 @@
 //============= Layout ===================
     Backbone.Layout = function(options) {
         logger.log('[Backbone.Layout] Creating layout for "' + options.el + '"');
-        _.extend(this, options);
+        _.extend(this, Backbone.Events, options);
     };
 
     Backbone.Layout.prototype = Object.create(Backbone.View.prototype);
@@ -317,7 +295,8 @@
     Backbone.Layout.prototype.resolve = function() {
         logger.log('[Backbone.Layout] Resolving layout for "' + (_.isObject(this.el) ? this.$el.selector : this.el) + '"');
         this.$el.empty().append(this._$content.children());
-        this.eventsApply();
+
+        this.trigger('renderComplete');
 
         if (this.afterRender) {
             this.afterRender.apply(this, arguments);
