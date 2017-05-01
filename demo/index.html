@@ -28,6 +28,16 @@
 
     <script src="./js/app.js"></script>
 
+    <script>
+        requirejs.config({
+            paths: {
+                underscore: 'js/libs/underscore-1.8.3',
+                text: 'js/libs/text',
+                tpl: 'js/libs/underscore-tpl'
+            }
+        })
+    </script>
+
     <!-- styles -->
     <link rel="stylesheet" href="./css/bootstrap.css">
     <link rel="stylesheet" href="./css/bootstrap-theme.css">

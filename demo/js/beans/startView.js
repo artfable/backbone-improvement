@@ -3,11 +3,11 @@
  * 31.10.15
  */
 $(function() {
-    require(['router'], function(router) {
+    require(['router', 'tpl!views/start.html'], function(router, template) {
         'use strict';
 
         return new (Backbone.View.extend({
-            templateUrl: 'views/start.html',
+            template: template,
             title: '',
             el: 'body',
 

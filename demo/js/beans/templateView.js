@@ -2,11 +2,11 @@
  * @author artfable
  * 31.10.15
  */
-define('templateLayout', function () {
+define('templateLayout', ['tpl!views/template.html'], function (template) {
     'use strict';
 
     return new (Backbone.Layout.extend({
-        templateUrl: 'views/template.html',
+        template: template,
         el: 'body'
     }))();
 });
