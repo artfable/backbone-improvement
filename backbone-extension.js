@@ -153,6 +153,7 @@
         var render = function() {
             logger.debug('[Backbone.View] Start resolve view "' + that.templateUrl + '".');
             that.resolve.apply(that, thatArguments);
+            that.delegateEvents(that.events);
             if (!_.isUndefined(that.title)) {
                 that.setTitle(that.title);
             }
@@ -196,7 +197,7 @@
      * @returns {Backbone.View}
      */
     Backbone.View.prototype.initialize = function() {
-        logger.debug('[Backbone.View] Initialize view "' + this.templateUrl + '"');
+        logger.debug('[Backbone.View] Initialize view "' + (this.templateUrl || this.title) + '"');
         if (this.resolve) {
             this.resolve = _.bind(this.resolve, this);
         }
@@ -210,6 +211,7 @@
         this.views = views;
         this.layout = layout;
         this.layoutOptions = layoutOptions;
+        _.extend(this, Backbone.Events);
     };
 
     Backbone.Page.prototype.setTitle = Backbone.View.prototype.setTitle;
@@ -296,6 +298,7 @@
         logger.log('[Backbone.Layout] Resolving layout for "' + (_.isObject(this.el) ? this.$el.selector : this.el) + '"');
         this.$el.empty().append(this._$content.children());
 
+        this.delegateEvents(this.events || {});
         this.trigger('renderComplete');
 
         if (this.afterRender) {
@@ -341,6 +344,7 @@
                 });
             },
             route: function(route) {
+                logger.debug('[Router] Set route for ' + route);
                 var router = Backbone.Router.prototype.route.apply(this, arguments);
                 var path = location.hash.replace('#', '');
                 if (Backbone.History.started && this._routeToRegExp(route).test(path)) {
