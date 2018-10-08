@@ -2,53 +2,51 @@
  * @author artfable
  * 31.10.15
  */
-$(function() {
-    require(['router', 'tpl!views/start.html'], function(router, template) {
-        'use strict';
+import { router } from '../app.js'
 
-        return new (Backbone.View.extend({
-            template: template,
-            title: '',
-            el: 'body',
+let startView = new (Backbone.View.extend({
+    templateUrl: 'views/start.html',
+    title: '',
+    el: 'body',
 
-            //events: [
-            //    {
-            //        selector: '#start_btn',
-            //        event: 'click',
-            //        call: 'start'
-            //    }
-            //],
+    //events: [
+    //    {
+    //        selector: '#start_btn',
+    //        event: 'click',
+    //        call: 'start'
+    //    }
+    //],
 
-            events: {
-                'click #start_btn': 'start'
-            },
+    events: {
+        'click #start_btn': 'start'
+    },
 
-            start: function() {
-                router.navigate('!/main', {trigger: true});
-            },
+    start: function() {
+        router.navigate('!/main', {trigger: true});
+    },
 
-            afterInitialize: function() {
-                router.routeStartView('start', this);
-            },
+    afterInitialize: function() {
+        router.routeStartView('start', this);
+    },
 
-            resolve: function() {
-                this.$el.html(this.template());
+    resolve: function() {
+        let moveRight = function() {
+            $startBtn.animate({'margin-left': '+=500'}, 4000, function() {
+                moveLeft();
+            });
+        };
+        this.$el.html(this.template());
 
-                var $startBtn = $('#start_btn').off();
-                var moveLeft = function() {
-                    $startBtn.animate({'margin-left': '-=500'}, 4000, function() {
-                        moveRight();
-                    });
-                };
-                var moveRight = function() {
-                    $startBtn.animate({'margin-left': '+=500'}, 4000, function() {
-                        moveLeft();
-                    });
-                };
+        let $startBtn = $('#start_btn').off();
+        let moveLeft = function() {
+            $startBtn.animate({'margin-left': '-=500'}, 4000, function() {
                 moveRight();
+            });
+        };
+        moveRight();
 
-                //this.eventsApply();
-            }
-        }))();
-    })
-});
+        //this.eventsApply();
+    }
+}))();
+
+export default startView

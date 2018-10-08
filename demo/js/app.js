@@ -2,23 +2,24 @@
  * @author artfable
  * 31.10.15
  */
-$(function() {
-    'use strict';
+import Logger from './libs/@artfable/js-logger/logger.js'
 
-    var appState = new (Backbone.Model.extend({
+let logger = new Logger();
+window.Logger = Logger;
+
+let appState = new (Backbone.Model.extend({
         url: 'js/conf/conf.json',
         defaults: {
             page: 'none'
         }
     }))();
 
-    define('appState', appState);
+let router =  Backbone.routerBuilder.addStateHolder(appState).build();
 
-    define('router', Backbone.routerBuilder.addStateHolder(appState).build());
-
+$(() => {
     appState.fetch({
         success: function() {
-            var loggersLevels = appState.get('logger');
+            let loggersLevels = appState.get('logger');
             _.each(_.keys(loggersLevels), function(loggerName) {
                 logger.applyLogLevel(loggersLevels[loggerName], loggerName);
             });
@@ -30,5 +31,7 @@ $(function() {
             Backbone.history.start();
             logger.debug('[appState] The application was started.');
         }
-    })
+    });
 });
+
+export { appState, router }

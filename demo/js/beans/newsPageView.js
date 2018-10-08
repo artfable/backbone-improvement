@@ -2,47 +2,40 @@
  * @author artfable
  * 01.11.15
  */
-define('newsPageView', function() {
-    'use strict';
+import menuComponent from './menuComponent.js';
+import { router } from "../app.js";
+import TemplatePage from './templateView.js';
 
-    return new (Backbone.View.extend({
-        templateUrl: 'views/news.html',
-        title: 'News',
+let newsPageView = new (Backbone.View.extend({
+    templateUrl: 'views/news.html',
+    title: 'News',
 
-        model: new (Backbone.Collection.extend({
-            url: 'serverMock/news.json'
-        }))(),
+    model: new (Backbone.Collection.extend({
+        url: 'serverMock/news.json'
+    }))(),
 
-        resolve: function() {
-            var that = this;
-            this.model.fetch({
-                success: function(collection) {
-                    that.$el.html(that.template({news: collection.toJSON()}));
-                }
-            });
+    resolve: function() {
+        this.model.fetch({
+            success: (collection) => {
+                this.$el.html(this.template({news: collection.toJSON()}));
+            }
+        });
+    }
+}))();
+
+let newsPage = new TemplatePage({
+    views: [
+        {
+            region: '#menu',
+            view: menuComponent
+        },
+        {
+            region: '#container',
+            view: newsPageView
         }
-    }))();
-});
+    ],
 
-$(function() {
-    require(['TemplatePage', 'newsPageView', 'menuComponent', 'router'],
-        function(TemplatePage, newsPageView, menuComponent, router) {
-            'use strict';
-            return new TemplatePage({
-                views: [
-                    {
-                        region: '#menu',
-                        view: menuComponent
-                    },
-                    {
-                        region: '#container',
-                        view: newsPageView
-                    }
-                ],
-
-                afterInitialize: function() {
-                    router.routeByView('!/news', 'news', this);
-                }
-            });
-        })
+    afterInitialize: function() {
+        router.routeByView('!/news', 'news', this);
+    }
 });

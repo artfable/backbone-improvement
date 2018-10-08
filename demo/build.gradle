@@ -1,0 +1,54 @@
+group = "org.artfable.backbone.extentions.demo"
+version = "3.0.0"
+
+buildscript {
+
+    ext {
+        npm_plugin = "0.0.3"
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.github.artfable.gradle:gradle-npm-repository-plugin:$npm_plugin"
+    }
+}
+
+apply plugin: 'base'
+apply plugin: 'artfable.npm'
+
+npmLoad.doFirst {
+    def output = new File("$projectDir/js/libs/")
+    println("test")
+    if (!output.exists()) {
+        output.mkdir()
+    }
+}
+
+npm {
+    output = "$projectDir/js/libs/"
+    dependencies = [
+            'backbone': '1.3.3',
+//            'bootstrap': '4.1.3',
+            'bootstrap': '3.3.5',
+            'jquery': '3.3.1',
+            '@artfable/js-logger': '1.0.1'
+    ]
+}
+
+task cssLocation(type: Copy) {
+    from('js/libs/bootstrap/dist/css')
+    into('css')
+}
+
+tasks.create('fullBuild', DefaultTask)
+
+cssLocation.shouldRunAfter npmLoad
+
+build.dependsOn cssLocation
+
+fullBuild.dependsOn npmLoad
+fullBuild.dependsOn build

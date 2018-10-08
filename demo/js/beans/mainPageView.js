@@ -2,38 +2,35 @@
  * @author artfable
  * 31.10.15
  */
-define('mainPageView', function() {
-    'use strict';
+import menuComponent from './menuComponent.js';
+import { router } from "../app.js";
+import TemplatePage from './templateView.js'
 
-    return new (Backbone.View.extend({
-        templateUrl: 'views/mainPage.html',
+let mainPageView = new (Backbone.View.extend({
+    templateUrl: 'views/mainPage.html',
 
-        resolve: function() {
-            this.$el.html(this.template());
+    resolve: function() {
+        this.$el.html(this.template());
+    }
+}))();
+
+let mainPage = new TemplatePage({
+    title: 'Main',
+    views: [
+        {
+            region: '#menu',
+            view: menuComponent
+        },
+        {
+            region: '#container',
+            view: mainPageView
         }
-    }))();
+    ],
+
+    afterInitialize: function() {
+        router.routeByView('!/main', 'main', this);
+    }
 });
 
-$(function() {
-    require(['TemplatePage', 'mainPageView', 'menuComponent', 'router'],
-        function(TemplatePage, mainPageView, menuComponent, router) {
-            'use strict';
-            return new TemplatePage({
-                title: 'Main',
-                views: [
-                    {
-                        region: '#menu',
-                        view: menuComponent
-                    },
-                    {
-                        region: '#container',
-                        view: mainPageView
-                    }
-                ],
-
-                afterInitialize: function() {
-                    router.routeByView('!/main', 'main', this);
-                }
-            });
-        })
-});
+export { mainPageView };
+export default mainPageView;

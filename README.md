@@ -1,29 +1,16 @@
 # backbone-improvement
 Some utils to make easy work with [Backbone](http://backbonejs.org/) <br/>
-(Version 2.1.0)
+(Version 3.0.0)
 
 ### Dependencies
 jQuery (http://jquery.com/) <br/>
 Underscore (http://underscorejs.org/) <br/>
 Backbone (http://backbonejs.org/)
 
-## Logger
-Simple wrapper for console, can be used without backbone, underscore or jQuery. Can be used safely in IE.
-Set common logger to `window.logger`. For create named logger use `new Logger(name)`.
-
-#### constructor `new Logger([name] [, level])` *default: name = 'common', level = 'info'*
-Create named logger.
-
-#### applyLogLevel `applyLogLevel(level [, name])`
-Set a level for logs (levels are the same as in `window.console`).
-
-**Example:**
-
-	window.logger.applyLogLevel('debug');
-
 ## Backbone extensions
 Some additions to backbone for simplifies application.
-If you use **Logger** - logger name will be 'backboneExtension'.
+If you use [Logger](https://github.com/artfable/js-logger) - logger name will be 'backboneExtension'.  
+Logger should be set to `window.Logger`
 
 ### Settings
 
