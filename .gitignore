@@ -2,6 +2,9 @@
 .idea
 build/
 
+demo/css
+demo/js/libs
+
 # Ignore Gradle GUI config
 gradle-app.setting
 
