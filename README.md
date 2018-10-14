@@ -7,10 +7,16 @@ jQuery (http://jquery.com/) <br/>
 Underscore (http://underscorejs.org/) <br/>
 Backbone (http://backbonejs.org/)
 
-## Backbone extensions
+## Backbone extension
 Some additions to backbone for simplifies application.
 If you use [Logger](https://github.com/artfable/js-logger) - logger name will be 'backboneExtension'.  
 Logger should be set to `window.Logger`
+
+### Install
+
+Available [through npm](https://www.npmjs.com/package/@artfable/js-logger)
+
+    npm i @artfable/backbone-extension
 
 ### Settings
 
